@@ -36,6 +36,7 @@ class MigrationCartalystTagsCreateTables extends Migration
             $table->string('taggable_type');
             $table->integer('taggable_id')->unsigned();
             $table->integer('tag_id')->unsigned();
+            $table->integer('type')->unsigned()->nullable()->default(null);
 
             $table->engine = 'InnoDB';
 

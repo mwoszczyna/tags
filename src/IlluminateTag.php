@@ -43,6 +43,7 @@ class IlluminateTag extends Model
         'slug',
         'count',
         'namespace',
+        'type',
     ];
 
     /**
@@ -50,7 +51,7 @@ class IlluminateTag extends Model
      *
      * @var string
      */
-    protected static $taggedModel = 'Cartalyst\Tags\IlluminateTagged';
+    protected static $taggedModel = Cartalyst\Tags\IlluminateTagged::class;
 
     /**
      * {@inheritdoc}

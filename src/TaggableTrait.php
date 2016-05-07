@@ -134,34 +134,40 @@ trait TaggableTrait
     /**
      * {@inheritdoc}
      */
-    public static function scopeWithTag(Builder $query, $tags, $type = 'slug')
+    public static function scopeWithTag(Builder $query, $tags, $type = 'slug', $tagType = false)
     {
         $tags = (new static)->prepareTags($tags);
 
-        return $query->whereHas('tags', function ($query) use ($type, $tags) {
+        return $query->whereHas('tags', function ($query) use ($type, $tags, $tagType) {
             $query->whereIn($type, $tags);
+            if ($tagType !== false) {
+                $query->where('type', $tagType);
+            }
         });
     }
 
     /**
     * {@inheritdoc}
     */
-    public static function scopeWithoutTag(Builder $query, $tags, $type = 'slug')
+    public static function scopeWithoutTag(Builder $query, $tags, $type = 'slug', $tagType = false)
     {
         $tags = (new static)->prepareTags($tags);
 
-        return $query->whereDoesntHave('tags', function ($query) use ($type, $tags) {
+        return $query->whereDoesntHave('tags', function ($query) use ($type, $tags, $tagType) {
             $query->whereIn($type, $tags);
+            if ($tagType !== false) {
+                $query->where('type', $tagType);
+            }
         });
     }
 
     /**
      * {@inheritdoc}
      */
-    public function tag($tags)
+    public function tag($tags, $tagType)
     {
         foreach ($this->prepareTags($tags) as $tag) {
-            $this->addTag($tag);
+            $this->addTag($tag, $tagType);
         }
 
         return true;
@@ -184,7 +190,7 @@ trait TaggableTrait
     /**
      * {@inheritdoc}
      */
-    public function setTags($tags, $type = 'name')
+    public function setTags($tags, $type = 'name', $tagType = 0)
     {
         // Prepare the tags
         $tags = $this->prepareTags($tags);
@@ -203,7 +209,7 @@ trait TaggableTrait
 
         // Attach the tags
         if (! empty($tagsToAdd)) {
-            $this->tag($tagsToAdd);
+            $this->tag($tagsToAdd, $tagType);
         }
 
         return true;
@@ -212,7 +218,7 @@ trait TaggableTrait
     /**
      * {@inheritdoc}
      */
-    public function addTag($name)
+    public function addTag($name, $tagType = 0)
     {
         $tag = $this->createTagsModel()->firstOrNew([
             'slug'      => $this->generateTagSlug($name),
@@ -221,9 +227,10 @@ trait TaggableTrait
 
         if (! $tag->exists) {
             $tag->name = $name;
-
             $tag->save();
         }
+
+        $tag->type = $tagType;
 
         if (! $this->tags->contains($tag->id)) {
             $tag->update([ 'count' => $tag->count + 1 ]);

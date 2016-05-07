@@ -99,9 +99,10 @@ interface TaggableInterface
      * @param  \Illuminate\Database\Eloquent\Builder  $query
      * @param  string|array  $tags
      * @param  string  $type
+     * @param  int|boolean  $tagType
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public static function scopeWithTag(Builder $query, $tags, $type = 'slug');
+    public static function scopeWithTag(Builder $query, $tags, $type = 'slug', $tagType = false);
 
     /**
      * Returns the entities that do not have one of the given tags.
@@ -117,9 +118,10 @@ interface TaggableInterface
      * Attaches multiple tags to the entity.
      *
      * @param  string|array  $tags
+     * @param  int  $tagType
      * @return bool
      */
-    public function tag($tags);
+    public function tag($tags, $tagType = 0);
 
     /**
      * Detaches multiple tags from the entity or if no tags are
@@ -135,17 +137,19 @@ interface TaggableInterface
      *
      * @param  string|array  $tags
      * @param  string  $type
+     * @param  int  $tagType
      * @return bool
      */
-    public function setTags($tags, $type = 'name');
+    public function setTags($tags, $type = 'name', $tagType);
 
     /**
      * Attaches the given tag to the entity.
      *
      * @param  string  $name
+     * @param  int  $tagType
      * @return void
      */
-    public function addTag($name);
+    public function addTag($name, $tagType = 0);
 
     /**
      * Detaches the given tag from the entity.
